@@ -7,6 +7,8 @@ import yycg.base.pojo.po.Usergys;
 import yycg.base.pojo.po.Userjd;
 import yycg.base.pojo.po.Useryy;
 import yycg.base.pojo.vo.ActiveUser;
+import yycg.base.pojo.vo.Menu;
+import yycg.base.pojo.vo.Operation;
 import yycg.base.pojo.vo.SysuserCustom;
 import yycg.base.pojo.vo.SysuserQueryVo;
 import yycg.base.pojo.vo.UseryyCustom;
@@ -107,4 +109,9 @@ public interface UserService {
 	 * @throws Exception 
 	 */
 	public ActiveUser checkUserInfo(String userid, String pwd) throws Exception;
+	
+	public List<Menu> findMenuByroleid(String roleId) throws Exception;
+
+	//根据角色Id查询操作权限
+	public List<Operation> findOperationByroleid(String roleId) throws Exception;
 }

@@ -44,11 +44,19 @@ public class YpmlController {
 	private YpmlService ypmlService;
 
 	// 查询页面
-	@RequestMapping("/querygysypml")
+	@RequestMapping("/gysypmlquery")
 	public String querygysypml(Model model) throws Exception {
 		// 药品类别
 		List<Dictinfo> yplblist = systemConfigService.findDictinfoByType("001");
 		model.addAttribute("yplblist", yplblist);
+		
+		List<Dictinfo> jyztlist=systemConfigService.findDictinfoByType("003");
+		model.addAttribute("jyztlist", jyztlist);
+		List<Dictinfo> ypzlcclist=systemConfigService.findDictinfoByType("004");
+		model.addAttribute("zlcclist", ypzlcclist);
+		
+		List<Dictinfo> controllist = systemConfigService.findDictinfoByType("008");
+		model.addAttribute("controllist", controllist);//控制标记，在页面进行判断
 
 		return "/business/ypml/querygysypml";
 	}
@@ -94,6 +102,8 @@ public class YpmlController {
 
 		List<Dictinfo> jyztlist=systemConfigService.findDictinfoByType("003");
 		model.addAttribute("jyztlist", jyztlist);
+		List<Dictinfo> ypzlcclist=systemConfigService.findDictinfoByType("004");
+		model.addAttribute("zlcclist", ypzlcclist);
 		return "/business/ypml/querygysypmladd";
 	}
 
@@ -240,7 +250,12 @@ public class YpmlController {
 	 */
 	@RequestMapping("/querygysypmlcontrol")
 	public String querygysypmlcontrol(Model model)throws Exception{
-		List<Dictinfo> controllist = systemConfigService.findDictinfoByType("s02");
+		List<Dictinfo> yplblist = systemConfigService.findDictinfoByType("001");
+		model.addAttribute("yplblist", yplblist);
+		
+		List<Dictinfo> jyztlist=systemConfigService.findDictinfoByType("003");
+		model.addAttribute("jyztlist", jyztlist);
+		List<Dictinfo> controllist = systemConfigService.findDictinfoByType("008");
 		model.addAttribute("controllist", controllist);//控制标记，在页面进行判断
 		return "/business/ypml/querygysypmlcontrol";
 		
@@ -296,6 +311,9 @@ public class YpmlController {
 			//系统提示信息封装类
 			ResultInfo resultInfo = null;
 			GysypmlControl gysypmlControl=gysypmls.get(indexs[i]);
+			String ypxxid=gysypmlControl.getYpxxid();
+			String usergysid=gysypmlControl.getUsergysid();
+			ypmlService.updateGysypmlControl(ypxxid,usergysid,gysypmlControl.getControl(),gysypmlControl.getAdvice());
 			try {
 			} catch (Exception e) {		
 				//进行异常解析

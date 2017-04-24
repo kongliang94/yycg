@@ -72,6 +72,12 @@ var columns = [ [{
 		return '<input type="hidden" name="gysypmlControls['+index+'].usergysid" value="'+row.usergysid+'" />';
 	}
 },{
+	field : 'ypxxid',
+	hidden : true,
+	formatter: function(value,row,index){
+		return '<input type="hidden" name="gysypmlControls['+index+'].ypxxid" value="'+row.ypxxid+'" />';
+	}
+},{
 	field : 'usergysmc',
 	title : '供货企业',
 	width : 80
@@ -221,9 +227,9 @@ function initGrid(){
 						<td ><INPUT type="text" name="ypxxCustom.spmc" /></td>
 						 <td class="left">价格范围：</td>
 				  		<td>
-				      		<INPUT id="ypxxCustom.zbjglower" name="ypxxCustom.zbjglower" style="width:70px"/>
+				      		<INPUT id="ypxxCustom.price_start" name="ypxxCustom.price_start" style="width:70px"/>
 							至
-							<INPUT id="ypxxCustom.zbjgupper" name="ypxxCustom.zbjgupper" style="width:70px"/>
+							<INPUT id="ypxxCustom.price_end" name="ypxxCustom.price_end" style="width:70px"/>
 							
 				 		 </td>
 					</tr>

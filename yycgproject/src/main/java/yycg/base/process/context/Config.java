@@ -12,7 +12,7 @@ import yycg.util.ResourcesUtil;
 
 /**
  * 系统参数配置类，配置了系统用到参数
- * @author mrt
+ * @author KL
  * 
  */
 public class Config {

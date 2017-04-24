@@ -114,9 +114,17 @@ $(document).ready(function(){
 		}  
 		//window.location='${baseurl}first.action';
 	}
+	
+	function on_return(){
+		 if(window.event.keyCode == 13){
+		  if (document.all('login')!=null){
+		   document.all('login').click();
+		   }
+		 }
+		 }
 </SCRIPT>
 </HEAD>
-<BODY style="background: #f6fdff url(${baseurl}images/login/bg1.jpg) repeat-x;">
+<BODY style="background: #f6fdff url(${baseurl}images/login/bg1.jpg) repeat-x;" onkeydown="on_return()">
 	<FORM id="loginform" name="loginform" action="${baseurl}loginsubmit.action"
 		method="post">
 		<DIV class="logincon">
@@ -146,14 +154,14 @@ $(document).ready(function(){
 						</TR>
 						<TR>
 							<TD>验证码：</TD>
-							<TD><input id="randomcode" name="validateCode" size="8" /> <img
+							<TD><input id="randomcode" name="validateCode" size="8"/> <img
 								id="randomcode_img" src="${baseurl}validatecode.jsp" alt=""
 								width="56" height="20" align='absMiddle' /> <a
 								href=javascript:randomcode_refresh()>刷新</a></TD>
 						</TR>
 
 						<TR>
-							<TD colSpan="2" align="center"><input type="button"
+							<TD colSpan="2" align="center"><input type="button" id="login"
 								class="btnalink" onclick="loginsubmit()" value="登&nbsp;&nbsp;录" />
 								<input type="reset" class="btnalink" value="重&nbsp;&nbsp;置" /></TD>
 						</TR>

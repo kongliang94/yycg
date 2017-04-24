@@ -92,7 +92,7 @@ $(function() {
 		title : '用户查询',//数据列表标题
 		nowrap : true,//单元格中的数据不换行，如果为true表示不换行，不换行情况下数据加载性能高，如果为false就是换行，换行数据加载性能不高
 		striped : true,//条纹显示效果
-		url : 'queryuser_result.action',//加载数据的连接，引连接请求过来是json数据
+		url : 'sysuserquery_result.action',//加载数据的连接，引连接请求过来是json数据
 		idField : 'id',//此字段很重要，数据结果集的唯一约束(重要)，如果写错影响 获取当前选中行的方法执行
 		loadMsg : '',
 		columns : columns_v,
@@ -161,7 +161,7 @@ function userdel_callback(data){
 
 //修改方法
 function sysuseredit(id){
-	createmodalwindow("添加用户信息", 800, 300, 'editsysuser.action?id='+id);
+	createmodalwindow("修改用户信息", 800, 300, 'editsysuser.action?id='+id);
 }
 </script>
 <!--  <script src="${baseurl}include/js/user/queryuser.js"></script>-->

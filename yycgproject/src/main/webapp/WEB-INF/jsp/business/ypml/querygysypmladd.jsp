@@ -201,9 +201,9 @@ var dataGrid_obj;//datagrid的对象
 						<td ><INPUT type="text" name="ypxxCustom.spmc" /></td>
 						 <td class="left">价格范围：</td>
 				  		<td>
-				      		<INPUT id="ypxxCustom.zbjglower" name="ypxxCustom.zbjglower" style="width:70px"/>
+				      		<INPUT id="ypxxCustom.price_start" name="ypxxCustom.price_start" style="width:70px"/>
 							至
-							<INPUT id="ypxxCustom.zbjgupper" name="ypxxCustom.zbjgupper" style="width:70px"/>
+							<INPUT id="ypxxCustom.price_end" name="ypxxCustom.price_end" style="width:70px"/>
 							
 				 		 </td>
 					</tr>

@@ -16,11 +16,46 @@
 			<if test="ypxxCustom.jyzt!=null and ypxxCustom.jyzt!=''">
 				and ypxx.jyzt = #{ypxxCustom.jyzt}
 			</if>
+			<if test="ypxxCustom.gg!=null and ypxxCustom.gg!=''">
+				and ypxx.gg = #{ypxxCustom.gg}
+			</if>
+			<if test="ypxxCustom.scqymc!=null and ypxxCustom.scqymc!=''">
+				and ypxx.scqymc = #{ypxxCustom.scqymc}
+			</if>
+			<!-- 质量层次 -->
+			<if test="ypxxCustom.zlcc!=null and ypxxCustom.zlcc!=''">
+				and ypxx.zlcc = #{ypxxCustom.zlcc}
+			</if>
+			<!-- 转换系数 -->
+			<if test="ypxxCustom.zhxs!=null and ypxxCustom.zhxs!=''">
+				and ypxx.zhxs=#{ypxxCustom.zhxs}
+			</if>
+			<!-- 药品类别 -->
+			<if test="ypxxCustom.lb!=null and ypxxCustom.lb!=''">
+			  and ypxx.lb = #{ypxxCustom.lb}
+			</if>			
+			<!-- 价格范围 -->
+			<if test="ypxxCustom.price_start!=null">
+			  and ypxx.zbjg>=#{ypxxCustom.price_start}
+			</if>
+			<if test="ypxxCustom.price_end!=null">
+			 <![CDATA[
+			  and ypxx.zbjg<=#{ypxxCustom.price_end}
+			  ]]>
+			</if>
+			
 		</if>
 	</sql>
 	
 	<select id="findYpxxList" parameterType="yycg.business.pojo.vo.YpxxQueryVo"
 	resultType="yycg.business.pojo.vo.YpxxCustom">
+	<!-- 分页头 -->
+		<if test="pageQuery!=null">
+	select page_2.*
+	from (select page_1.*, rownum page_num
+	from
+	(
+		</if>
 		select id,
 		bm,
 		mc,
@@ -44,6 +79,14 @@
 		<where>
 			<include refid="query_ypxx_where" />
 		</where>
+		<!-- 分页尾 -->
+		<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>
 	</select>
 	<select id="findYpxxCount" parameterType="yycg.business.pojo.vo.YpxxQueryVo"
 	resultType="int">

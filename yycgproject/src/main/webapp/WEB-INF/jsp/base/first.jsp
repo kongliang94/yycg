@@ -31,7 +31,8 @@
 	$(function() {//预加载方法
 		//通过ajax请求菜单
 		$.ajax({
-			url : '${baseurl}menu.json',
+			url:'${baseurl}usermenu.action',
+			//url : '${baseurl}menu.json',
 			type : 'POST',
 			dataType : 'json',
 			success : function(data) {
@@ -87,8 +88,8 @@
 		style='background: url("images/layout-browser-hd-bg.gif") repeat-x center 50% rgb(127, 153, 190); height: 30px; color: rgb(255, 255, 255); line-height: 20px; overflow: hidden; font-family: Verdana, 微软雅黑, 黑体;'
 		border="false" split="true" region="north">
 		<SPAN style="padding-right: 20px; float: right;" class="head">
-			欢迎当前用户：${sysuser.username}&nbsp;&nbsp;
-			<A href=javascript:showhelp()>使用帮助</A>
+			欢迎当前用户：${activeUser.username}&nbsp;&nbsp;
+			<A title='帮助' ref='modifypwd' href="#" rel='${baseurl}help/help.html' icon='icon-null' id="modifypwd">使用帮助</A>
 			&nbsp;&nbsp;
 			<A title='修改密码' ref='modifypwd' href="#" rel='${baseurl}user/updatepwd.action' icon='icon-null' id="modifypwd" >修改密码</A>
 			&nbsp;&nbsp;

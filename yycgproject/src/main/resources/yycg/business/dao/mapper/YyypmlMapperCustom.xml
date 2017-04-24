@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.project.yycg.business.ypml.dao.mapper.YyypmlMapperCustom" >
+  
+
+ <!-- 医院药品目录自定义查询条件 -->
+  <sql id="queryYyypml_where_custom">
+		<if test="yyypml!=null">
+			 <!-- 医院id -->
+			 <if test="yyypml.useryyid!=null and yyypml.useryyid!=''">
+				and yyypml.useryyid = #{yyypml.useryyid}
+		 	</if> 
+		</if>
+		<!-- 供货商信息 -->
+		<if test="usergys!=null">
+		 <if test="usergys.mc!=null and usergys.mc!=''">
+				and usergys.mc like '%${usergys.mc}%'
+		 </if>  
+		</if>
+		
+  </sql>
+ 
+  <!-- 医院采购药品目录查询个数 -->
+  <select id="findYyypmlCount" parameterType="cn.itcast.project.yycg.business.ypml.pojo.vo.YyypmlQueryVo"
+  			resultType="java.lang.Integer">
+  			
+  	 select count(*) from (
+  select nvl(m2.control,2) control,
+       m1.*
+  from (select 
+               yyypml.useryyid,
+               yyypml.usergysid,
+               useryy.mc useryymc,
+               usergys.mc usergysmc,
+               ypxx.id ypxxid,
+               ypxx.bm,
+               ypxx.mc,
+               ypxx.zbjg,
+               ypxx.jx,
+               ypxx.gg,
+               ypxx.zhxs,
+               ypxx.scqymc,
+               ypxx.spmc,
+               ypxx.dw,
+               ypxx.zlcc,
+               ypxx.jyzt,
+               (select info from dictinfo where id = ypxx.zlcc) zlccmc,
+               (select info
+                  from dictinfo
+                 where typecode = '003'
+                   and dictcode = ypxx.jyzt) jyztmc,
+               (select info from dictinfo where id = ypxx.lb) lbmc
+          from ypxx, yyypml,useryy,usergys
+        
+         where ypxx.id = yyypml.ypxxid
+         and yyypml.useryyid = useryy.id
+         and yyypml.usergysid = usergys.id
+         <include refid="queryYyypml_where_custom" />
+		 <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.YpxxMapperCustom.queryYpxx_Where_Clause"/>
+ 		 <if test="yycgdid!=null and yycgdid!=''">
+ 		 and not exists(select 1 from yycgdmx${businessyear} yycgdmx where yycgdmx.yycgdid=#{yycgdid} and yycgdmx.ypxxid=ypxx.id)
+ 		 </if>
+        ) m1 left join 
+       ( select gysypml_control.*
+         from gysypml,gysypml_control,usergys
+         where gysypml.ypxxid = gysypml_control.ypxxid 
+         and gysypml.usergysid = gysypml_control.usergysid 
+         and usergys.id = gysypml.usergysid
+           <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.GysypmlMapperCustom.queryGysypml_where_custom"/>
+          ) m2
+       on m1.ypxxid = m2.ypxxid   and m1.usergysid = m2.usergysid
+ 
+ )m3 
+<!-- 供货状态，仅用于医院药品目录查询 -->
+<if test="control!=null and control!=''">
+		where m3.control = #{control}
+</if> 
+  			
+  </select>
+  <!-- 医院采购药品目录查询数据列表 -->
+  <select id="findYyypmlList" parameterType="cn.itcast.project.yycg.business.ypml.pojo.vo.YyypmlQueryVo"
+  			resultType="cn.itcast.project.yycg.business.ypml.pojo.vo.YyypmlCustom">
+  		<if test="iscount!=0">
+  			select * from (
+			select rownum pages_rownum,q_t1.* from( 
+  		</if>
+  		  select * from (
+  select nvl(m2.control,2) control,
+       m1.*
+  from (select 
+               yyypml.useryyid,
+               yyypml.usergysid,
+               useryy.mc useryymc,
+               usergys.mc usergysmc,
+               ypxx.id ypxxid,
+               ypxx.bm,
+               ypxx.mc,
+               ypxx.zbjg,
+               ypxx.jx,
+               ypxx.gg,
+               ypxx.zhxs,
+               ypxx.scqymc,
+               ypxx.spmc,
+               ypxx.dw,
+               ypxx.zlcc,
+               ypxx.jyzt,
+               (select info from dictinfo where id = ypxx.zlcc) zlccmc,
+               (select info
+                  from dictinfo
+                 where typecode = '003'
+                   and dictcode = ypxx.jyzt) jyztmc,
+               (select info from dictinfo where id = ypxx.lb) lbmc
+          from ypxx, yyypml,useryy,usergys
+        
+         where ypxx.id = yyypml.ypxxid
+         and yyypml.useryyid = useryy.id
+         and yyypml.usergysid = usergys.id
+         <include refid="queryYyypml_where_custom" />
+		 <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.YpxxMapperCustom.queryYpxx_Where_Clause"/>
+  		<if test="yycgdid!=null and yycgdid!=''">
+ 		 and not exists(select 1 from yycgdmx${businessyear} yycgdmx where yycgdmx.yycgdid=#{yycgdid} and yycgdmx.ypxxid=ypxx.id)
+ 		 </if>
+        ) m1 left join 
+       ( select gysypml_control.*
+         from gysypml,gysypml_control,usergys
+         where gysypml.ypxxid = gysypml_control.ypxxid 
+         and gysypml.usergysid = gysypml_control.usergysid 
+         and usergys.id = gysypml.usergysid
+           <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.GysypmlMapperCustom.queryGysypml_where_custom"/>
+          ) m2
+       on m1.ypxxid = m2.ypxxid   and m1.usergysid = m2.usergysid
+ 
+ )m3 
+<!-- 供货状态，仅用于医院药品目录查询 -->
+<if test="control!=null and control!=''">
+		where m3.control = #{control}
+</if> 
+  		order by m3.mc
+  		<if test="iscount!=0">
+  		<![CDATA[
+  			)q_t1
+			where rownum<=${pageQuery.PageQuery_end} 
+			)q_t
+			where q_t.pages_rownum>${pageQuery.PageQuery_start}
+			]]>
+  		</if>
+  		
+  </select>
+  
+  <!-- 供货商药品目录添加数据列表 -->
+  <select id="findYyypmlAddList" parameterType="cn.itcast.project.yycg.business.ypml.pojo.vo.YyypmlQueryVo"
+  			resultType="cn.itcast.project.yycg.business.ypml.pojo.vo.YyypmlCustom">
+  		<if test="iscount!=0">
+  			select * from (
+			select rownum pages_rownum,q_t1.* from( 
+  		</if>
+  		select 
+        m3.usergysmc,
+        m3.ypxxid,
+        m3.usergysid,
+        ypxx.bm,
+       ypxx.scqymc,
+       ypxx.spmc,
+       ypxx.dw,
+       ypxx.zbjg,
+       ypxx.zlcc,
+       ypxx.mc,
+       ypxx.jx,
+       ypxx.gg,
+       ypxx.zhxs,
+       (select info from dictinfo where id = ypxx.zlcc) zlccmc,
+       (select info
+          from dictinfo
+         where typecode = '003'
+           and dictcode = ypxx.jyzt) jyztmc,
+       (select info from dictinfo where id = ypxx.lb) lbmc
+  from (select m1.*, m2.yyypmlid
+          from (select gysypml_control.*, usergys.mc usergysmc
+                  from gysypml, gysypml_control, usergys
+                 where gysypml.ypxxid = gysypml_control.ypxxid
+                   and gysypml.usergysid = gysypml_control.usergysid
+                   and usergys.id = gysypml.usergysid
+                   and gysypml_control.control = '1'
+                   <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.GysypmlMapperCustom.queryGysypml_where_custom"/>
+                   ) m1
+          left join
+        
+         (select yyypml.id        yyypmlid,
+                yyypml.useryyid,
+                yyypml.usergysid,
+                ypxx.id          ypxxid
+         
+           from ypxx, yyypml, useryy, usergys
+         
+          where ypxx.id = yyypml.ypxxid
+            and yyypml.useryyid = useryy.id
+            and yyypml.usergysid = usergys.id
+            <include refid="queryYyypml_where_custom" />
+            ) m2
+        
+            on m1.ypxxid = m2.ypxxid
+           and m1.usergysid = m2.usergysid) m3,
+       ypxx
+ where m3.yyypmlid is null
+   and m3.ypxxid = ypxx.id
+   and ypxx.jyzt='1'<!-- 药品交易状态 -->
+   <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.YpxxMapperCustom.queryYpxx_Where_Clause"/>
+ order by ypxx.mc                 
+      
+  		<if test="iscount!=0">
+  		<![CDATA[
+  			)q_t1
+			where rownum<=${pageQuery.PageQuery_end} 
+			)q_t
+			where q_t.pages_rownum>${pageQuery.PageQuery_start}
+			]]>
+  		</if>
+  		
+  </select>
+  
+  <!-- 供货商药品目录添加数据个数 -->
+  <select id="findYyypmlAddCount" parameterType="cn.itcast.project.yycg.business.ypml.pojo.vo.YyypmlQueryVo"
+  			resultType="java.lang.Integer">
+
+  		select 
+        count(1)
+  from (select m1.*, m2.yyypmlid
+          from (select gysypml_control.*, usergys.mc usergysmc
+                  from gysypml, gysypml_control, usergys
+                 where gysypml.ypxxid = gysypml_control.ypxxid
+                   and gysypml.usergysid = gysypml_control.usergysid
+                   and usergys.id = gysypml.usergysid
+                   and gysypml_control.control = '1'
+                   <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.GysypmlMapperCustom.queryGysypml_where_custom"/>
+                   ) m1
+          left join
+        
+         (select yyypml.id        yyypmlid,
+                yyypml.useryyid,
+                yyypml.usergysid,
+                ypxx.id          ypxxid
+         
+           from ypxx, yyypml, useryy, usergys
+         
+          where ypxx.id = yyypml.ypxxid
+            and yyypml.useryyid = useryy.id
+            and yyypml.usergysid = usergys.id
+            <include refid="queryYyypml_where_custom" />
+            ) m2
+        
+            on m1.ypxxid = m2.ypxxid
+           and m1.usergysid = m2.usergysid) m3,
+       ypxx
+ where m3.yyypmlid is null
+   and m3.ypxxid = ypxx.id
+   and ypxx.jyzt='1'<!-- 药品交易状态 -->
+   <include refid="cn.itcast.project.yycg.business.ypml.dao.mapper.YpxxMapperCustom.queryYpxx_Where_Clause"/>
+
+  		
+  </select>
+</mapper>

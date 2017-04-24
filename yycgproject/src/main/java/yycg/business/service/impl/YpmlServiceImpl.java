@@ -240,4 +240,20 @@ public class YpmlServiceImpl implements YpmlService {
 		return gysypmlMapperCustom.findGysypmlControlCount(gysypmlQueryVo);
 	}
 
+	@Override
+	public void updateGysypmlControl(String ypxxid, String usergysid,String control, String advice)throws Exception {
+		if(ypxxid == null || usergysid == null || control == null || control.equals("")){
+			ResultUtil.throwExcepion(ResultUtil.createWarning(Config.MESSAGE, 901, null));
+		}
+		GysypmlControl gysypmlControl=findGysypmlControlByUsergysidAndYpxxid(usergysid, ypxxid);
+		if (gysypmlControl==null) {
+			
+		}
+		gysypmlControl.setAdvice(advice);
+		gysypmlControl.setControl(control);
+		
+		gysypmlControlMapper.updateByPrimaryKey(gysypmlControl);
+		
+	}
+
 }

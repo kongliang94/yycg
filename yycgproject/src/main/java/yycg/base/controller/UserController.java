@@ -34,7 +34,7 @@ public class UserController {
 	@Autowired
 	private SystemConfigService systemConfigService;
 	
-	@RequestMapping("/querysysuser")
+	@RequestMapping("/sysuserquery")
 	public String queryuser(Model model) throws Exception{
 		
 		List<Dictinfo> groupinfos=systemConfigService.findDictinfoByType("s01");
@@ -46,7 +46,7 @@ public class UserController {
 	
 	//用户查询页面的结果集
 	//最终DataGridResultInfo通过@ResponseBody将java对象转成json
-	@RequestMapping("/queryuser_result")
+	@RequestMapping("/sysuserquery_result")
 	public @ResponseBody DataGridResultInfo queryuser_result(
 			SysuserQueryVo sysuserQueryVo,
 			int page,//页码

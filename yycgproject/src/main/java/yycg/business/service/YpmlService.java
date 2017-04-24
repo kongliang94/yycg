@@ -54,4 +54,7 @@ public interface YpmlService {
 	//供货商药品目录控制列表
 	public List<GysypmlCustom> findGysypmlControlList(GysypmlQueryVo gysypmlQueryVo) throws Exception;
 	public int findGysypmlControlCount(GysypmlQueryVo gysypmlQueryVo)throws Exception;
+	//通过更新control来管理供货商药品
+	public void updateGysypmlControl(String ypxxid, String usergysid,
+			String control, String advice)throws Exception;
 }

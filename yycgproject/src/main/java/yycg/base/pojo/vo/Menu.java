@@ -4,12 +4,12 @@ import java.util.List;
 
 /**
  * 菜单模型类
- * @author mrt
+ * @author KL
  *
  */
 public class Menu {
 
-	//菜单
+	//二级菜单
 	private List<Menu> menus;
 	
 	private String menuid;

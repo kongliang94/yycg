@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yycg.business.dao.mapper.YybusinessMapperCustom" >
+  
+  <!-- 交易明细列表sql片段 -->
+  <sql id="businesslist">
+  select 
+	useryy.id useryyid,
+	useryy.mc useryymc,
+	yycgd.bm yycgdbm,
+	yycgd.id yycgdid,
+	usergys.id usergysid,
+	usergys.mc usergysmc,
+	yycgdmx.ypxxid,
+	ypxx.id,
+	ypxx.bm,
+	ypxx.mc,
+	ypxx.jx,
+	ypxx.gg,
+	ypxx.zhxs,
+	ypxx.scqymc,
+	ypxx.spmc,
+	ypxx.jyzt,
+
+	(select info
+	from dictinfo
+	where ypxx.jyzt = dictcode
+	and typecode = '003') jyztmc,
+	(select info
+          from dictinfo
+         where typecode = '011'
+           and dictcode = yycgdmx.cgzt) cgztmc,
+           yycgdmx.jyjg,
+	yycgdmx.cgl,
+	yycgdmx.cgje,
+	yycgdmx.rkl,
+	yycgdmx.rkje,
+	yycgdmx.thl,
+	yycgdmx.thje,
+	yycgdmx.jsl,
+	yycgdmx.jsje
+
+	from yybusiness${businessyear} yycgdmx, yycgd${businessyear} yycgd, useryy, usergys, ypxx
+	where yycgdmx.yycgdid = yycgd.id
+	and yycgd.useryyid = useryy.id
+	and yycgdmx.usergysid = usergys.id
+	and yycgdmx.ypxxid = ypxx.id
+
+	<!-- 监管单位查询管理地区内医院采购明细信息 -->
+	<!-- 医院查询条件 -->
+	<include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where" />
+
+	<!-- 供货商查询： 与本供货商相关的采购明细信息 -->
+	<include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_usergys_where" />
+
+	<!-- 药品查询条件 -->
+	<include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where" />
+
+	<!-- 采购单查询条件 -->
+	<include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgd_where" />
+
+	<!-- 采购单明细查询条件 -->
+	<include
+		refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgdmx_where" />
+  </sql>
+  
+  
+  <!-- 交易明细查询 -->
+<select id="findYybusinessList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="yycg.business.pojo.vo.YycgdmxCustom">
+	
+	<!-- 分页头 -->
+		<if test="pageQuery!=null">
+			select page_2.*
+			from (select page_1.*, rownum page_num
+			from
+			(
+		</if>
+	<!-- 交易明细列表 -->
+	<include refid="businesslist"/>
+		
+	<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>	
+</select>
+<!-- 交易明细查询总数 -->
+<select id="findYybusinessCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="int">
+	
+	
+	select 	count(*) from (
+	    <!-- 交易明细列表 -->
+		<include refid="businesslist"/>
+	)
+
+	
+</select>
+<!-- 药品统计总计 -->
+<select id="findYybusinessSum" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="yycg.business.pojo.vo.YycgdmxCustom">
+	
+	
+	select 
+	sum(nvl(yycgdmx.cgl,0))cgl,
+ sum(nvl(yycgdmx.cgje,0))cgje,
+ sum(nvl(yycgdmx.rkl,0))rkl,
+ sum(nvl(yycgdmx.rkje,0))rkje
+	from yybusiness${businessyear} yycgdmx, yycgd${businessyear} yycgd, useryy, usergys, ypxx
+	where yycgdmx.yycgdid = yycgd.id
+	and yycgd.useryyid = useryy.id
+	and yycgdmx.usergysid = usergys.id
+	and yycgdmx.ypxxid = ypxx.id
+
+	<!-- 监管单位查询管理地区内医院采购明细信息 -->
+	<!-- 医院查询条件 -->
+	<include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where" />
+
+	<!-- 供货商查询： 与本供货商相关的采购明细信息 -->
+	<include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_usergys_where" />
+
+	<!-- 药品查询条件 -->
+	<include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where" />
+
+	<!-- 采购单查询条件 -->
+	<include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgd_where" />
+
+	<!-- 采购单明细查询条件 -->
+	<include
+		refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgdmx_where" />
+
+	
+</select>
+
+<!-- 按药品进行统计列表 -->
+<select id="findYybusinessGroupbyYpxxList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="yycg.business.pojo.vo.YycgdmxCustom">
+	<!-- 分页头 -->
+		<if test="pageQuery!=null">
+			select page_2.*
+			from (select page_1.*, rownum page_num
+			from
+			(
+		</if>
+
+select 
+ business.id,
+ business.bm,
+ business.mc,
+ sum(nvl(business.cgl,0))cgl,
+ sum(nvl(business.cgje,0))cgje,
+ sum(nvl(business.rkl,0))rkl,
+ sum(nvl(business.rkje,0))rkje,
+ sum(nvl(business.thl,0))thl,
+ sum(nvl(business.thje,0))thje,
+ sum(nvl(business.jsl,0))jsl,
+ sum(nvl(business.jsje,0))jsje
+ from (
+ 
+ 
+<!-- 交易明细列表 -->
+   <include refid="businesslist"/>
+
+   )business
+   
+   <!-- 按药品统计 -->
+   group by business.id,business.bm,business.mc
+   
+<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>
+
+</select>
+
+<!-- 按药品进行统计列表总数 -->
+<select id="findYybusinessGroupbyYpxxCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="int">
+
+select count(*) from (
+
+   
+select 
+ business.id
+ from (
+ 
+ 
+<!-- 交易明细列表 -->
+   <include refid="businesslist"/>
+
+   )business
+   
+   <!-- 按药品统计 -->
+   group by business.id
+
+)
+
+
+</select>
+  <!-- 按医院进行统计列表 -->
+<select id="findYybusinessGroupbyUseryyList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="yycg.business.pojo.vo.YycgdmxCustom">
+	<!-- 分页头 -->
+		<if test="pageQuery!=null">
+			select page_2.*
+			from (select page_1.*, rownum page_num
+			from
+			(
+		</if>
+
+select business1.*,useryy.mc useryymc
+  from (select business.useryyid,
+               sum(nvl(business.cgl, 0)) cgl,
+               sum(nvl(business.cgje, 0)) cgje,
+               sum(nvl(business.rkl, 0)) rkl,
+               sum(nvl(business.rkje, 0)) rkje,
+               sum(nvl(business.thl, 0)) thl,
+               sum(nvl(business.thje, 0)) thje,
+               sum(nvl(business.jsl, 0)) jsl,
+               sum(nvl(business.jsje, 0)) jsje
+          from (
+                <!-- 交易明细列表 -->
+   			<include refid="businesslist"/>
+                ) business
+        
+         group by business.useryyid) business1,
+       useryy
+ where business1.useryyid = useryy.id
+   
+<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>
+
+</select>
+
+<!-- 按医院进行统计列表总数 -->
+<select id="findYybusinessGroupbyUseryyCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="int">
+
+select count(*) from 
+(select business.useryyid
+ from(
+ 
+ 
+<!-- 交易明细列表 -->
+   <include refid="businesslist"/>
+
+     ) business
+      
+     group by business.useryyid,business.useryymc)
+
+
+</select>
+
+<!-- 按供货商进行统计列表 -->
+<select id="findYybusinessGroupbyUsergysList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="yycg.business.pojo.vo.YycgdmxCustom">
+	<!-- 分页头 -->
+		<if test="pageQuery!=null">
+			select page_2.*
+			from (select page_1.*, rownum page_num
+			from
+			(
+		</if>
+
+select 
+ business.usergysid,
+ business.usergysmc,
+ sum(nvl(business.cgl,0))cgl,
+ sum(nvl(business.cgje,0))cgje,
+ sum(nvl(business.rkl,0))rkl,
+ sum(nvl(business.rkje,0))rkje,
+ sum(nvl(business.thl,0))thl,
+ sum(nvl(business.thje,0))thje,
+ sum(nvl(business.jsl,0))jsl,
+ sum(nvl(business.jsje,0))jsje
+ from (
+ 
+ 
+<!-- 交易明细列表 -->
+   <include refid="businesslist"/>
+
+   )business
+   
+   group by business.usergysid,business.usergysmc
+   
+<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>
+
+</select>
+
+<!-- 按供货商进行统计列表总数 -->
+<select id="findYybusinessGroupbyUsergysCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="int">
+
+select count(*) from (
+
+   
+select 
+ business.usergysid
+ from (
+ 
+ 
+<!-- 交易明细列表 -->
+   <include refid="businesslist"/>
+
+   )business
+   
+   <!-- 按药品统计 -->
+   group by business.usergysid
+
+)
+
+
+</select>
+
+
+<!-- 按区域进行统计列表 -->
+<select id="findYybusinessGroupbyAreaList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+	resultType="yycg.business.pojo.vo.YycgdmxCustom">
+
+select areainfo.areaname as areaname, nvl(yybusiness.cgje, 0) cgje
+  from (select bss_sys_area.areaname, 0 cgje
+          from bss_sys_area
+         where bss_sys_area.arealevel = '2') areainfo
+  left join (
+             
+             select (select areaname
+                        from bss_sys_area
+                       where areaid = yybusiness.parentid) as areaname,
+                     sum(yybusiness.cgje) as cgje
+               from (select yybusiness.*,
+                             (select parentid
+                                from bss_sys_area
+                               where areaid = yybusiness.useryydq) parentid
+                        from (select yybusiness.useryyid,
+                                     (select dq
+                                        from useryy
+                                       where id = yybusiness.useryyid) useryydq,
+                                     
+                                     yybusiness.cgje
+                                from (
+                                      
+                                      <include refid="businesslist"/>
+                                      
+                                      ) yybusiness) yybusiness) yybusiness
+              group by yybusiness.parentid) yybusiness
+    on yybusiness.areaname = areainfo.areaname
+
+</select>
+</mapper>

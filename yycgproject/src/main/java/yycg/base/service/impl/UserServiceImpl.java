@@ -22,6 +22,8 @@ import yycg.base.pojo.po.UserjdExample;
 import yycg.base.pojo.po.Useryy;
 import yycg.base.pojo.po.UseryyExample;
 import yycg.base.pojo.vo.ActiveUser;
+import yycg.base.pojo.vo.Menu;
+import yycg.base.pojo.vo.Operation;
 import yycg.base.pojo.vo.SysuserCustom;
 import yycg.base.pojo.vo.SysuserQueryVo;
 import yycg.base.pojo.vo.UseryyCustom;
@@ -30,6 +32,7 @@ import yycg.base.process.context.Config;
 import yycg.base.process.result.ExceptionResultInfo;
 import yycg.base.process.result.ResultInfo;
 import yycg.base.process.result.ResultUtil;
+import yycg.base.service.SystemConfigService;
 import yycg.base.service.UserService;
 import yycg.util.MD5;
 import yycg.util.UUIDBuild;
@@ -49,6 +52,9 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private SysuserMapperCustom sysuserMapperCustom;
+	
+	@Autowired
+	private SystemConfigService systemConfigService;
 	
 	@Override
 	public List<SysuserCustom> findSysuserList(SysuserQueryVo sysuserQueryVo)
@@ -404,6 +410,28 @@ public class UserServiceImpl implements UserService{
 		activeUser.setSysmc(sysmc);
 		activeUser.setUserid(userid);
 		activeUser.setUsername(sysuser.getUsername());
+		
+		String roleId=systemConfigService.findDictinfoByDictcode("s01", groupid).getRemark();
+		//通过分组Id知道了角色Id，因为数据库优化，分组Id就是角色Id
+		//将该用户具有的菜单直接赋值给他
+		List<Menu> menus=findMenuByroleid(roleId);
+		Menu menu=new Menu();
+		menu.setMenus(menus);
+		activeUser.setMenu(menu);
+		
+		//给用户设置具有的操作权限
+		List<Operation> operationList=findOperationByroleid(roleId);
+		activeUser.setOperationList(operationList);
 		return activeUser;
+	}
+	@Override
+	public List<Menu> findMenuByroleid(String roleId) throws Exception {
+		
+		return sysuserMapperCustom.findMenuByroleid(roleId);
+	}
+	@Override
+	public List<Operation> findOperationByroleid(String roleId)
+			throws Exception {
+		return sysuserMapperCustom.findOperationByroleid(roleId);
 	}
 }
