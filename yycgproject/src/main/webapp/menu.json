@@ -21,7 +21,9 @@
                {"icon" : "icon-sys","menuid" : "1","menuname" : "采购单管理","url" : "","menus" : [
                  {"icon" : "icon-log","menuid" : "1_1","menuname" : "创建采购单","url" : "/yycgproject/cgd/addcgd.action"
                  },
-                 {"icon" : "icon-log","menuid" : "1_1","menuname" : "采购单维护","url" : "/yycgproject/cgd/yycgdlist.action"
+                 {"icon" : "icon-log","menuid" : "1_1","menuname" : "采购单维护","url" : "/yycgproject/cgd/yycgdmanager.action"
+                 },
+                 {"icon" : "icon-log","menuid" : "1_1","menuname" : "采购单查询","url" : "/yycgproject/cgd/yycgdlist.action"
                  },
                  {"icon" : "icon-log","menuid" : "1_1","menuname" : "采购单审核","url" : "/yycgproject/cgd/yycgdreview.action"
                  },

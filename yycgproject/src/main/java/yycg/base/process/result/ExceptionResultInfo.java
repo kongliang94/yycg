@@ -7,7 +7,7 @@ package yycg.base.process.result;
  */
 public class ExceptionResultInfo extends Exception{
 
-	// 系统统一使用的结果类，包括了 提示信息类型和信息内容
+	//系统统一使用的结果类，包括了 提示信息类型和信息内容
 	private ResultInfo resultInfo;
 	
 	public ResultInfo getResultInfo() {

@@ -335,8 +335,7 @@ public class UserServiceImpl implements UserService{
 	}
 	@Override
 	public Useryy getUseryyById(String id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return useryyMapper.selectByPrimaryKey(id);
 	}
 	@Override
 	public Useryy getUseryyByMc(String mc) throws Exception {
@@ -357,6 +356,16 @@ public class UserServiceImpl implements UserService{
 	public void deleteUseryy(String id) throws Exception {
 		// TODO Auto-generated method stub
 		
+	}
+	/**
+	 * 根据监督机构id获取信息
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public Userjd getUserjdById(String id) throws Exception{
+		return userjdMapper.selectByPrimaryKey(id);
 	}
 	@Override
 	public ActiveUser checkUserInfo(String userid, String pwd) throws Exception{

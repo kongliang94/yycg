@@ -12,7 +12,7 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 /**
  * excel导出的封装类
- * @author miaoruntu
+ * @author kl
  *
  */
 public class ExcelExportSXXSSF {

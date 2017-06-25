@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import yycg.base.pojo.po.Dictinfo;
+import yycg.base.pojo.po.Userjd;
 import yycg.base.pojo.vo.ActiveUser;
 import yycg.base.pojo.vo.PageQuery;
+import yycg.base.pojo.vo.UseryyCustom;
 import yycg.base.process.context.Config;
 import yycg.base.process.result.DataGridResultInfo;
 import yycg.base.process.result.ExceptionResultInfo;
@@ -22,6 +25,7 @@ import yycg.base.process.result.ResultInfo;
 import yycg.base.process.result.ResultUtil;
 import yycg.base.process.result.SubmitResultInfo;
 import yycg.base.service.SystemConfigService;
+import yycg.base.service.UserService;
 import yycg.business.pojo.po.Yycgd;
 import yycg.business.pojo.po.Yycgdmx;
 import yycg.business.pojo.vo.GysypmlQueryVo;
@@ -41,9 +45,10 @@ public class CgdController {
 
 	@Autowired
 	private SystemConfigService systemConfigService; 
-
+	@Autowired
+	private UserService userService;
 	//创建采购单基本信息页面
-	@RequestMapping("/addcgd")
+	@RequestMapping("/yycgdadd")
 	public String addcgd(HttpSession session,Model model)throws Exception{
 
 		//对采购单进行初始化
@@ -73,9 +78,40 @@ public class CgdController {
 		resultInfo.getSysdata().put("yycgdid", yycgdid);
 		return ResultUtil.createSubmitResult(resultInfo);
 	}
+	/**
+	 * 采购单维护列表
+	 */
+	@RequestMapping("/yycgdmanager")
+	public String yycgdmanager(Model model) throws Exception{
+		model.addAttribute("year", MyUtil.get_YYYY(MyUtil.getDate()));
+		return "/business/cgd/yycgdmanager";
+	}
+	/**
+	 * 采购单维护列表结果集
+	 */
+	@RequestMapping("/yycgdmanager_result")
+	public @ResponseBody
+	DataGridResultInfo yycgdmanager_result(ActiveUser activeUser,
+			/*@RequestParam(value = "year", required = true) */String year,
+			YycgdQueryVo yycgdQueryVo, int page, int rows) throws Exception {
 
+		//这里用springmvc的参数解析器来把ActiveUser封装成参数
+		String useryyid=activeUser.getSysid();
+		//列表的总数
+		int total = cgdService.findYycgdCount(useryyid, year, yycgdQueryVo);
+		//分页参数
+		PageQuery pageQuery = new PageQuery();
+		pageQuery.setPageParams(total, rows, page);
+		yycgdQueryVo.setPageQuery(pageQuery);// 设置分页参数
+		List<YycgdCustom> list= cgdService.findYycgdList(useryyid, year, yycgdQueryVo);
+		DataGridResultInfo dataGridResultInfo = new DataGridResultInfo();
+		dataGridResultInfo.setTotal(total);
+		dataGridResultInfo.setRows(list);
+		return dataGridResultInfo;
+		
+	}
 	// 采购单修改页面方法
-	@RequestMapping("/editcgd")
+	@RequestMapping("/yycgdedit")
 	public String editcgd(Model model, String id) throws Exception {
 
 		// 采购状态
@@ -219,7 +255,7 @@ public class CgdController {
 		return dataGridResultInfo;
 
 	}
-	@RequestMapping("/addyycgdmxsubmit")
+	@RequestMapping("/yycgdmxaddsubmit")
 	@ResponseBody
 	public SubmitResultInfo addyycgdmxsubmit(String yycgdid,
 			int[] indexs,YycgdQueryVo yycgdQueryVo)throws Exception{
@@ -380,7 +416,7 @@ public class CgdController {
 						count_success, count_error }), msgs_error);
 	}
 
-
+	
 	//采购药品添加
 	@RequestMapping("/yycgdlist")
 	public String yycgdlist(Model model)throws Exception{
@@ -406,6 +442,14 @@ public class CgdController {
 		//这里用springmvc的参数解析器来把ActiveUser封装成参数
 		/*ActiveUser activeUser=(ActiveUser) session.getAttribute(Config.ACTIVEUSER_KEY);*/
 		String useryyid=activeUser.getSysid();
+		
+		if(activeUser.getGroupid().equals("2") || activeUser.getGroupid().equals("1")){//监督单位：卫生局或卫生院
+			UseryyCustom useryyCustom=new UseryyCustom();
+			//监督机构只查询管辖地区医院下的采购单
+			Userjd userjd = userService.getUserjdById(activeUser.getSysid());
+			useryyCustom.setGldq(userjd.getDq());
+			yycgdQueryVo.setUseryyCustom(useryyCustom);
+		}
 		//列表的总数
 		int total = cgdService.findYycgdCount(useryyid, year, yycgdQueryVo);
 		//分页参数

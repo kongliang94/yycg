@@ -22,7 +22,7 @@
 	float: left;
 	margin: 12px 28px 12px auto;
 	line-height: 30px;
-	background: url('${baseurl}images/login/btnbg.jpg') no-repeat;
+	background:  url('${baseurl}images/login/btnbg.jpg') no-repeat ;
 	font-size: 14px;
 	color: #fff;
 	font-weight: bold;
@@ -32,6 +32,9 @@
 <%@ include file="/WEB-INF/jsp/base/common_js.jsp"%>
 
 <script type="text/javascript">
+
+
+
 $(document).ready(function(){
 	//*****************表单校验******************
 	$.formValidator.initConfig({
@@ -76,6 +79,25 @@ $(document).ready(function(){
 
 	//登录提示方法
 	function loginsubmit() {
+		
+		/* var userid=document.getElementById("userid").value;
+		var password=document.getElementById("password").value; */
+		/* 
+		var userid=$("#userid").val();
+		var password=$("#password").val();
+		//alert(userid+'');
+		var str = '{"appIds": [{"appid": "'+userid+'"}, {"appid": "1108288808"}], "password":"'+password+'","language": "cn","EmailAddress": "380875458@qq.com", "ClusterNum": 2, "WordNum": 2, "EmailMessage": true, "ShowOnWebPage": true}';
+		//var obj = str.parseJSON();
+		alert(str);
+		$.ajax({
+			   type: "POST",
+			   url: "http://localhost:5000/ana",			
+			   data: str,
+			   success: function(msg){
+			     alert(msg);
+			   }
+			});  */
+		
 		if(checkinput()){//校验表单，如果校验通过则执行jquerySubByFId
 			//ajax form提交
 			jquerySubByFId('loginform', login_commit_callback,null,'json'); 
@@ -134,7 +156,7 @@ $(document).ready(function(){
 			</DIV>
 
 			<DIV class="cen_con">
-				<IMG alt="" src="${baseurl}images/login/bg2.png">
+				<%-- <IMG alt="" src="${baseurl}images/login/bg2.png"> --%>
 			</DIV>
 
 			<DIV class="tab_con">
@@ -145,11 +167,11 @@ $(document).ready(function(){
 						<TR>
 							<TD>用户名：</TD>
 							<TD colSpan="2"><input type="text" id="userid"
-								name="userid" style="WIDTH: 130px" /></TD>
+								name="userid" style="WIDTH: 130px height:30px"  /></TD>
 						</TR>
 						<TR>
 							<TD>密 码：</TD>
-							<TD><input type="password" id="password" name="pwd" style="WIDTH: 130px" />
+							<TD><input type="password" id="password" name="pwd" style="WIDTH: 130px height:30px " />
 							</TD>
 						</TR>
 						<TR>

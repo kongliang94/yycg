@@ -21,7 +21,7 @@ import yycg.base.process.result.ExceptionResultInfo;
 import yycg.base.process.result.ResultInfo;
 
 /**
- * 全局异常处理器,全局需要在web.xml中配置，关闭spring默认的异常处理器。
+ * 全局异常处理器,全局一般需要在web.xml中配置，关闭spring默认的异常处理器。
  * @author KL
  *
  */

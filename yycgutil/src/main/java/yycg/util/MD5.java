@@ -365,6 +365,8 @@ public class MD5 {
 	}
 
 	public static void main(String args[]) {
+		String string="";
+		System.out.println(string.length());
 
 		MD5 m = new MD5();
 		if (Array.getLength(args) == 0) { // 如果没有参数，执行标准的Test Suite

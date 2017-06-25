@@ -28,8 +28,7 @@ public class LoginController {
 	
 	@RequestMapping("/loginsubmit")
 	@ResponseBody
-	public SubmitResultInfo loginsubmit(HttpSession session, String userid, String pwd,String validateCode)throws Exception{
-		
+	public SubmitResultInfo loginsubmit(HttpSession session, String userid, String pwd,String validateCode)throws Exception{	
 		//校验验证码
 		String validateCode_session = (String) session.getAttribute("validateCode");
 		if(validateCode_session!=null && !validateCode_session.equals(validateCode)){
@@ -37,11 +36,8 @@ public class LoginController {
 			ResultUtil.throwExcepion(ResultUtil.createFail(Config.MESSAGE, 113,
 					null));
 		}
-
-
 		// service，用户认证
 		ActiveUser activeUser = userService.checkUserInfo(userid, pwd);
-
 		// 将用户身份信息写入session
 		session.setAttribute(Config.ACTIVEUSER_KEY, activeUser);
 		return ResultUtil.createSubmitResult(ResultUtil.createSuccess(

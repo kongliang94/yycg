@@ -24,13 +24,16 @@ import yycg.base.process.context.Config;
 import yycg.base.process.result.DataGridResultInfo;
 import yycg.base.process.result.ResultUtil;
 import yycg.base.process.result.SubmitResultInfo;
+import yycg.base.process.result.View;
 import yycg.base.service.SystemConfigService;
+import yycg.business.pojo.po.Ypxx;
 import yycg.business.pojo.vo.YpxxCustom;
 import yycg.business.pojo.vo.YpxxQueryVo;
 import yycg.business.service.YpxxService;
 import yycg.util.ExcelExportSXXSSF;
 import yycg.util.HxlsOptRowsInterface;
 import yycg.util.HxlsRead;
+import yycg.util.MyUtil;
 import yycg.util.UUIDBuild;
 
 @Controller
@@ -46,6 +49,54 @@ public class YpxxController {
 	@Autowired
 	private HxlsOptRowsInterface ypxxImportService;
 	
+	
+	
+	/**
+	 * 药品信息查询
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ypxxquery")
+	public String ypxxquery(Model model) throws Exception{
+		
+		return View.toBusiness("/ypml/ypxxquery");
+	}
+	@RequestMapping("/ypxxmanager")
+	public String ypxxmanager(Model model) throws Exception{
+		model.addAttribute("ismanager", "1");//此标记作为页面上管理按钮是否显示的依据 1：表示需要管理功能
+		return ypxxquery(model);
+
+	}
+	/**
+	 * 药品信息查询结果
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ypxxquery_result")
+	public @ResponseBody DataGridResultInfo ypxxquery_result(YpxxQueryVo ypxxQueryVo,int page,int rows) throws Exception{
+		
+		//非空校验
+		ypxxQueryVo = ypxxQueryVo!=null?ypxxQueryVo:new YpxxQueryVo();
+
+				//查询列表的总数
+				int total = ypxxService.findYpxxCount(ypxxQueryVo);
+
+				PageQuery pageQuery = new PageQuery();
+				pageQuery.setPageParams(total, rows, page);
+
+				ypxxQueryVo.setPageQuery(pageQuery);
+
+				//分页查询，向ypxxQueryVo中传入pageQuery
+				List<YpxxCustom> list = ypxxService.findYpxxList(ypxxQueryVo);
+
+				DataGridResultInfo dataGridResultInfo = new DataGridResultInfo();
+				//填充 total
+				dataGridResultInfo.setTotal(total);
+				//填充  rows
+				dataGridResultInfo.setRows(list);
+				System.out.println(dataGridResultInfo);
+				return dataGridResultInfo;
+	}
 	@RequestMapping("/exportypxx")
 	public String exportypxx(Model model) throws Exception{
 
@@ -244,5 +295,98 @@ public class YpxxController {
 		}
 		
 	}
+	
+	/**
+	 * 修改药品信息
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ypxxedit")
+	public String ypxxedit(String editid,Model model) throws Exception{
+		if(editid != null){
+			Ypxx ypxx = ypxxService.getYpxxObject(editid);
+			if(ypxx!=null){
+				model.addAttribute("ypxx", ypxx);
+			}else{
+				ResultUtil.throwExcepion(ResultUtil.createWarning(Config.MESSAGE,902, null));
+			}
+		}
 
+		/*//药品类别
+		List yplbList = systemConfigService.findDicttypeinfolist("001");
+		//药品状态类别
+		List ypztList = systemConfigService.findDicttypeinfolist("002");
+		//质量层次
+		List ypzlccList = systemConfigService.findDicttypeinfolist("004");
+		//交易状态
+		List ypjyztList = systemConfigService.findDicttypeinfolist("003");
+
+		model.addAttribute("yplbList", yplbList);
+		model.addAttribute("ypztList", ypztList);
+		model.addAttribute("ypzlccList", ypzlccList);
+		model.addAttribute("ypjyztList", ypjyztList);*/
+		return View.toBusiness("/ypml/ypxxedit");
+	}
+
+	@RequestMapping("/ypxxsave")
+	@ResponseBody
+	public SubmitResultInfo ypxxsave(YpxxQueryVo ypxxQueryVo) throws Exception{
+		
+		
+		Ypxx ypxx=ypxxQueryVo.getYpxx();
+		YpxxCustom ypxxCustom=ypxxQueryVo.getYpxxCustom();
+		if(ypxxQueryVo == null || ypxx == null || ypxx.getMc() == null){
+			return ResultUtil.createSubmitResult(ResultUtil.createWarning(Config.MESSAGE,901, null));
+		}
+
+		if(MyUtil.isNotNullAndEmpty(ypxx.getId())){
+			ypxxService.updateYpxx(ypxx);
+		}else{
+			ypxxService.insertYpxx(ypxx);
+		}
+		return ResultUtil.createSubmitResult(ResultUtil.createSuccess(Config.MESSAGE,906,null));
+	}
+	
+	@RequestMapping("/ypxxview")
+	public String ypxxview(String id,Model model) throws Exception{
+		if(id != null){
+			Ypxx ypxx = ypxxService.getYpxxObject(id);
+			if(ypxx!=null){
+				model.addAttribute("ypxx", ypxx);
+			}else{
+				ResultUtil.throwExcepion(ResultUtil.createWarning(Config.MESSAGE,902, null));
+			}
+		}
+		
+		return View.toBusiness("/ypml/ypxxview");
+	}
+	
+	/**
+	 * 删除药品信息
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/ypxxdel")
+	public @ResponseBody SubmitResultInfo ypxxdel(String ypxxdelid) throws Exception{
+		if(ypxxdelid == null || ypxxdelid.equals("")){
+			return ResultUtil.createSubmitResult(ResultUtil.createWarning(Config.MESSAGE,901, null));
+		}
+		
+		String[] idAtt=ypxxdelid.split(",");
+		int del_success=0;
+		int del_fail=0;
+		for(int i=0;i<idAtt.length;i++){
+			try{
+				ypxxService.deleteYpxx(idAtt[i]);
+				del_success++;
+			}catch(Exception e){
+				del_fail++;
+				e.printStackTrace();
+			}
+		}
+		
+		return ResultUtil.createSubmitResult(ResultUtil.createSuccess(Config.MESSAGE,907, new Object[]{del_success,del_fail}));
+		
+	}
+	
 }

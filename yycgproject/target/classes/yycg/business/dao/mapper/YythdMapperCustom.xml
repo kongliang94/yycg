@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yycg.business.dao.mapper.YythdMapperCustom" >
+  
+  <!-- 退货单信息 -->
+<sql id="queryYythd_where_custom">
+<if test="yycgdCustom!=null">
+		<if test="yycgdCustom.yythdid!=null and yycgdCustom.yythdid!=''">
+			and yythd.id=#{yycgdCustom.yythdid}
+		</if>
+		<if test="yycgdCustom.yythdbm!=null and yycgdCustom.yythdbm!=''">
+			and yythd.bm=#{yycgdCustom.yythdbm}
+		</if>
+		<if test="yycgdCustom.yythdmc!=null and yycgdCustom.yythdmc!=''">
+			and yythd.mc like '%${yycgdCustom.yythdmc}%'
+		</if>
+		<if test="yycgdCustom.ksthdate!=null">
+ 	   		    <![CDATA[ and yythd.cjtime >= #{yycgdCustom.ksthdate}]]>
+		</if>
+		<if test="yycgdCustom.jsthdate!=null">
+ 	   		    <![CDATA[ and yythd.cjtime <= #{yycgdCustom.jsthdate}]]>
+		</if>
+		<if test="yycgdCustom.thdzt!=null and yycgdCustom.thdzt!=''">
+			and yythd.zt=#{yycgdCustom.thdzt}
+		</if>
+		
+		<!-- 退货信息 yycgdmx -->
+   		<if test="yycgdCustom.thzt!=null and yycgdCustom.thzt!=''">
+   		   and yythdmx.thzt=#{yycgdCustom.thzt}
+   		</if>
+
+   		<if test='yycgdCustom.issetupThl!=null and yycgdCustom.issetupThl=="0"'>
+   		   and  (yythdmx.thl is null)
+   		</if>
+   		<if test='yycgdCustom.issetupThl!=null and yycgdCustom.issetupThl=="1"'>
+   		   and  (yythdmx.thl is not null)
+   		</if>
+
+</if>
+</sql>
+<!-- 退货单号生成 -->
+<select id="generatorThdbm" parameterType="java.lang.String" resultType="java.lang.String">
+	select to_char(sysdate,'yyyy')||yycgdbm${value}.nextval from dual
+</select>
+<!-- 退货单查询列表 -->
+<select id="findYythdList" parameterType="yycg.business.pojo.vo.YycgdQueryVo" 
+				resultType="yycg.business.pojo.vo.YycgdCustom" >
+		
+ <if test="pageQuery!=null">
+			select page_2.*
+			from (select page_1.*, rownum page_num
+			from (
+		</if>
+	select yythd.id,
+	yythd.bm,
+	yythd.mc,
+	yythd.useryyid,
+	yythd.lxr,
+	yythd.lxdh,
+	yythd.cjtime,
+	yythd.tjtime,
+	yythd.zt,
+	useryy.mc useryymc,
+	(select info
+	from dictinfo
+	where typecode = '012'
+	and dictcode = yythd.zt) thdztmc
+	from yythd${businessyear} yythd,useryy
+	where yythd.useryyid=useryy.id
+	<include refid="queryYythd_where_custom" />
+	 <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where" />
+	order by yythd.bm desc
+	<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>
+
+</select>
+
+<!-- 退货单查询数量 -->
+<select id="findYythdCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo" 
+				resultType="java.lang.Integer" >
+
+	select count(1)
+	from yythd${businessyear} yythd,useryy
+	where yythd.useryyid=useryy.id
+	<include refid="queryYythd_where_custom" />
+	 <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where" />
+	order by yythd.bm desc	
+        
+</select>
+
+<!-- 退货单明细列表 -->
+<select id="findYythdmxList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+							 resultType="yycg.business.pojo.vo.YycgdCustom">
+		 <if test="pageQuery!=null">
+			select page_2.*
+			from (select page_1.*, rownum page_num
+			from (
+		</if>	
+	
+	    
+	   select
+       ypxx.bm ypxxbm,
+       ypxx.mc ypxxmc,
+       ypxx.jx,
+       ypxx.gg,
+       ypxx.zhxs,
+       ypxx.scqymc,
+       ypxx.spmc,
+       ypxx.zbjg,
+       ypxx.zlcc,
+       (select info from dictinfo where id = ypxx.zlcc) zlccmc,
+       ypxx.jyzt,
+       (select info
+          from dictinfo
+         where typecode = '003'
+           and dictcode = ypxx.jyzt) jyztmc,
+       yycgdmx.*
+  from ypxx,
+       (select   yycgdmx.yycgdid yycgdid,
+        		 yycgd.bm       yycgdbm,
+                 yycgd.mc       yycgdmc,
+                 yycgd.useryyid,
+                 (select mc from useryy where id = yycgd.useryyid) useryymc,
+                 
+                 yycgdmx.id yycgdmxid,
+                 yycgdmx.ypxxid,
+                 (select mc from usergys where id = yycgdmx.usergysid) usergysmc,
+                 yycgdmx.jyjg,
+                 yycgdmx.cgl,
+                 yycgdmx.cgje,
+                 yycgdmx.cgzt,
+                 (select info
+                    from dictinfo
+                   where typecode = '011'
+                     and dictcode = yycgdmx.cgzt) cgztmc,
+                 yycgdrk.rkl,
+                 yycgdrk.rkje,
+                 yycgdrk.rkdh,
+                 yycgdrk.ypph,
+                 yycgdrk.ypyxq,
+                 yycgdrk.rktime,
+                 yythd.id yythdid,
+                 yythd.bm yythdbm,
+                 yythd.mc yythdmc,
+                  yythd.cjtime,
+                 yythdmx.thl,
+                 yythdmx.thje,
+                 yythdmx.thyy,
+                 (select info
+                    from dictinfo
+                   where typecode = '013'
+                     and dictcode = yythdmx.thzt) thztmc
+          from 	 yycgdmx${businessyear} yycgdmx,
+          		 yycgd${businessyear} yycgd,
+          		 yycgdrk${businessyear} yycgdrk,
+          		 yythd${businessyear} yythd,
+          		 yythdmx${businessyear} yythdmx,
+          		 useryy
+         where yycgdmx.yycgdid = yycgd.id 
+         	   and yythdmx.yythdid = yythd.id
+         	   and yythdmx.yycgdid = yycgdmx.yycgdid
+         	   and yythdmx.ypxxid = yycgdmx.ypxxid
+         	   and yycgdrk.yycgdid = yycgdmx.yycgdid
+         	   and yycgdrk.ypxxid = yycgdmx.ypxxid
+         	    and useryy.id=yythd.useryyid     
+           <include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgd_where" />
+           <include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgdmx_where" />
+           <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where" />
+           <include refid="queryYythd_where_custom" />
+          
+		) yycgdmx
+ 		where ypxx.id = yycgdmx.ypxxid 
+		<!-- 药品查询条件 -->
+		<include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where" />
+ 		order by yycgdmx.yycgdid,ypxx.mc
+
+  		<if test="pageQuery!=null">
+			) page_1
+        <![CDATA[
+         where rownum <= ${pageQuery.PageQuery_end}) page_2
+ where page_2.page_num >= ${pageQuery.PageQuery_start}
+ ]]>
+		</if>
+</select>
+
+
+<!-- 退后单明细数量-->
+<select id="findYythdmxCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo" 
+								resultType="java.lang.Integer">
+
+      select count(1)
+		 from ypxx,
+		      (select   yycgdmx.yycgdid,
+		       		 yycgd.bm       yycgdbm,
+                 yycgd.mc       yycgdmc,
+                 yycgd.useryyid,
+                 (select mc from useryy where id = yycgd.useryyid) useryymc,
+                 yycgdmx.id yycgdmxid,
+                 yycgdmx.ypxxid,
+                 (select mc from usergys where id = yycgdmx.usergysid) usergysmc,
+                 yycgdmx.jyjg,
+                 yycgdmx.cgl,
+                 yycgdmx.cgje,
+                 yycgdmx.cgzt,
+                 (select info
+                    from dictinfo
+                   where typecode = '011'
+                     and dictcode = yycgdmx.cgzt) cgztmc,
+                 yycgdrk.rkl,
+                 yycgdrk.rkje,
+                 yycgdrk.rkdh,
+                 yycgdrk.ypph,
+                 yycgdrk.ypyxq,
+                 yycgdrk.rktime,
+                 yythd.id yythdid,
+                 yythd.bm yythdbm,
+                 yythd.mc yythdmc,
+                 yythdmx.thl,
+                 yythdmx.thje,
+                 yythdmx.thyy,
+                 (select info
+                    from dictinfo
+                   where typecode = '013'
+                     and dictcode = yythdmx.thzt) thztmc
+          from 	 yycgdmx${businessyear} yycgdmx,
+          		 yycgd${businessyear} yycgd,
+          		 yycgdrk${businessyear} yycgdrk,
+          		 yythd${businessyear} yythd,
+          		 yythdmx${businessyear} yythdmx,
+          		 useryy
+         where yycgdmx.yycgdid = yycgd.id 
+         	   and yythdmx.yythdid = yythd.id
+         	   and yythdmx.yycgdid = yycgdmx.yycgdid
+         	   and yythdmx.ypxxid = yycgdmx.ypxxid
+         	   and yycgdrk.yycgdid = yycgdmx.yycgdid
+         	   and yycgdrk.ypxxid = yycgdmx.ypxxid
+         	   and useryy.id=yythd.useryyid
+          <include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgd_where" />
+           <include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgdmx_where" />
+           <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where" />
+           <include refid="queryYythd_where_custom" />
+          
+		) yycgdmx
+ 		where ypxx.id = yycgdmx.ypxxid 
+		<!-- 药品查询条件 -->
+		<include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where" />
+</select>
+    
+</mapper>

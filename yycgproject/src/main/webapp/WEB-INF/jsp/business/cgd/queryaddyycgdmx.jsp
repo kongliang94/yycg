@@ -195,7 +195,7 @@ function initGrid(){
 </HEAD>
 <BODY>
 <div id="ypxxquery_div">
-    <form id="gysypmlForm" name="gysypmlForm" action="${baseurl}cgd/addyycgdmxsubmit.action" method="post">
+    <form id="gysypmlForm" name="gysypmlForm" action="${baseurl}cgd/yycgdmxaddsubmit.action" method="post">
 			<input type="hidden" name="yycgdid" value="${yycgdid}">
 			<input type="hidden" name="indexs" id="indexs" />
 			<TABLE  class="table_search">

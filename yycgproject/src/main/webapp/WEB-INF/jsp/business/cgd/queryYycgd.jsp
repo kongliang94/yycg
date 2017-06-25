@@ -16,7 +16,7 @@
 
 
 function yycgdedit(bm){
-	var sendUrl = "${baseurl}cgd/editcgd.action?id="+bm;
+	var sendUrl = "${baseurl}cgd/yycgdedit.action?id="+bm;
 	parent.opentabwindow(bm+'采购单修改',sendUrl);//打开一个新标签
 }
 
@@ -138,7 +138,7 @@ var columns = [ [
 	field : 'yycgdztmc',
 	title : '采购单<br>状态', 
 	width : 60
-},{
+}/* ,{
 	field : 'opt3',
 	title : '修改',
 	width : 60,
@@ -154,7 +154,7 @@ var columns = [ [
 		return '<a href=javascript:yycgddel("'+row.bm+'")>修改</a>';
 	}
 	
-}]];
+} */]];
 
 function initGrid(){
 	$('#yycgdlist').datagrid({

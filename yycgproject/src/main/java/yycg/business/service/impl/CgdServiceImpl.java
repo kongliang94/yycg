@@ -394,8 +394,10 @@ public class CgdServiceImpl implements CgdService{
 		if (useryy==null) {
 			useryy=new Useryy();
 		}
-		useryy.setId(useryyid);
-		yycgdQueryVo.setUseryy(useryy);
+		if (yycgdQueryVo.getUseryyCustom()==null) {
+			useryy.setId(useryyid);
+			yycgdQueryVo.setUseryy(useryy);
+		}
 
 		return yycgdMapperCustom.findYycgdList(yycgdQueryVo);
 	}
@@ -413,9 +415,14 @@ public class CgdServiceImpl implements CgdService{
 		if (useryy==null) {
 			useryy=new Useryy();
 		}
-		useryy.setId(useryyid);
-		yycgdQueryVo.setUseryy(useryy);
-
+		if (yycgdQueryVo.getUseryyCustom()==null) {
+			
+				useryy.setId(useryyid);
+				yycgdQueryVo.setUseryy(useryy);
+			
+		}
+		
+			
 		return yycgdMapperCustom.findYycgdCount(yycgdQueryVo);
 	}
 
@@ -425,15 +432,42 @@ public class CgdServiceImpl implements CgdService{
 	@Override
 	public void deleteYycgd(String id, String useryyid) throws Exception {
 
-		if (id==null||id=="") {
-
-		}
 		//找不到采购单
 		//采购单已提交不允许删除
 		//只允许删除自己创建的采购单
 		//删除采购单主表
-
 		//删除采购单明细
+		//找不到采购单
+		if(id == null || id.equals("")){
+			ResultUtil.throwExcepion(ResultUtil.createWarning(Config.MESSAGE, 901, null));
+		}
+		String year = id.substring(0, 4);
+		Yycgd yycgd_del = findYycgdById(id);
+				if(yycgd_del == null){
+					ResultUtil.throwExcepion(ResultUtil.createFail(Config.MESSAGE,501, null));
+				}
+				//采购单已提交不允许删除
+				if(!yycgd_del.getZt().equals("1")){
+					ResultUtil.throwExcepion(ResultUtil.createFail(Config.MESSAGE,506, null));
+				}
+				//只允许删除自己创建的采购单
+				if(!yycgd_del.getUseryyid().equals(useryyid)){
+					ResultUtil.throwExcepion(ResultUtil.createFail(Config.MESSAGE,507, null));
+				}
+				
+				//删除采购单主表
+				YycgdExample yycgdExample1=new  YycgdExample();
+				yycgdExample1.setBusinessyear(year);//指定年份
+				YycgdExample.Criteria criteira1=yycgdExample1.createCriteria();
+				criteira1.andIdEqualTo(id);
+				yycgdMapper.deleteByExample(yycgdExample1);
+				
+				//删除采购单明细
+				YycgdmxExample yycgdmxExample1=new  YycgdmxExample();
+				yycgdmxExample1.setBusinessyear(year);//指定年份
+				YycgdmxExample.Criteria criteira2=yycgdmxExample1.createCriteria();
+				criteira2.andYycgdidEqualTo(id);
+				yycgdmxMapper.deleteByExample(yycgdmxExample1);	
 	}
 
 
@@ -722,9 +756,13 @@ public class CgdServiceImpl implements CgdService{
 			yycgdmxCustom = yycgdmxCustom != null ? yycgdmxCustom
 					: new YycgdmxCustom();
 			yycgdmxCustom.setUseryyid(useryyid);
-			//采购药品明细状态为“已发货”
-			String cgzt = "2";
-			yycgdmxCustom.setCgzt(cgzt);
+			if (yycgdmxCustom.getCgzt()=="3") {
+
+			}else {
+				//采购药品明细状态为“已发货”
+				String cgzt = "2";
+				yycgdmxCustom.setCgzt(cgzt);
+			}
 
 			yycgdQueryVo.setYycgdmxCustom(yycgdmxCustom);
 
@@ -743,9 +781,14 @@ public class CgdServiceImpl implements CgdService{
 			yycgdmxCustom = yycgdmxCustom != null ? yycgdmxCustom
 					: new YycgdmxCustom();
 			yycgdmxCustom.setUseryyid(useryyid);
-			//采购药品明细状态为“已发货”
-			String cgzt = "2";
-			yycgdmxCustom.setCgzt(cgzt);
+			if (yycgdmxCustom.getCgzt()=="3") {
+				
+			}else {
+				//采购药品明细状态为“已发货”
+				String cgzt = "2";
+				yycgdmxCustom.setCgzt(cgzt);
+			}
+			
 
 			yycgdQueryVo.setYycgdmxCustom(yycgdmxCustom);
 
@@ -837,6 +880,48 @@ public class CgdServiceImpl implements CgdService{
 			yycgdQueryVo.setBusinessyear(businessyear);
 
 			return yycgdMapperCustom.findYycgdmxListSum(yycgdQueryVo);
+		}
+
+
+
+		@Override
+		public List<YycgdmxCustom> findYycgdrkList(String useryyid,
+				String year, YycgdQueryVo yycgdQueryVo) throws Exception {
+			YycgdmxCustom yycgdmxCustom = yycgdQueryVo.getYycgdmxCustom();
+			yycgdmxCustom = yycgdmxCustom != null ? yycgdmxCustom
+					: new YycgdmxCustom();
+			yycgdmxCustom.setUseryyid(useryyid);
+			if (yycgdmxCustom.getCgzt()=="3") {
+
+			}else {
+				//采购药品明细状态为“已发货”
+				String cgzt = "2";
+				yycgdmxCustom.setCgzt(cgzt);
+			}
+
+			yycgdQueryVo.setYycgdmxCustom(yycgdmxCustom);
+
+			//设置年份
+			yycgdQueryVo.setBusinessyear(year);
+			return yycgdMapperCustom.findYycgdmxrkList(yycgdQueryVo);
+		}
+
+
+
+		@Override
+		public int findYycgdrkCount(String useryyid, String year,
+				YycgdQueryVo yycgdQueryVo) throws Exception {
+			YycgdmxCustom yycgdmxCustom = yycgdQueryVo.getYycgdmxCustom();
+			yycgdmxCustom = yycgdmxCustom != null ? yycgdmxCustom
+					: new YycgdmxCustom();
+			yycgdmxCustom.setUseryyid(useryyid);
+			
+
+			yycgdQueryVo.setYycgdmxCustom(yycgdmxCustom);
+
+			//设置年份
+			yycgdQueryVo.setBusinessyear(year);
+			return yycgdMapperCustom.findYycgdmxrkCount(yycgdQueryVo);
 		}
 
 

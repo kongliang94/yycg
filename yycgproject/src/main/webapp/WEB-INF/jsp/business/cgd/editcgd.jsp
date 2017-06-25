@@ -53,7 +53,7 @@ function yycgdsubmit_callback(data) {
 	//提交成功再刷新本页面,提交按钮就不显示
 	if(result.type==TYPE_RESULT_SUCCESS){
 		//重新再次跳转到修改页面，页面上的提交按钮、添加、删除的控制就不显示了。
-		window.location="${baseurl}cgd/editcgd.action?id=${yycgd.id}";
+		window.location="${baseurl}cgd/yycgdedit.action?id=${yycgd.id}";
 	}
 	
 }
@@ -422,9 +422,9 @@ function yycgdmxquery(){
 						<td ><INPUT type="text" name="ypxxCustom.spmc" /></td>
 						 <td class="left">价格范围：</td>
 				  		<td>
-				      		<INPUT id="ypxxCustom.zbjglower" name="ypxxCustom.zbjglower" style="width:70px"/>
+				      		<INPUT id="ypxxCustom.zbjglower" name="ypxxCustom.price_start" style="width:70px"/>
 							至
-							<INPUT id="ypxxCustom.zbjgupper" name="ypxxCustom.zbjgupper" style="width:70px"/>
+							<INPUT id="ypxxCustom.zbjgupper" name="ypxxCustom.price_end" style="width:70px"/>
 							
 				 		 </td>
 					</tr>

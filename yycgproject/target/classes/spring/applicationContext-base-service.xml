@@ -16,4 +16,5 @@
 <!-- 用户管理 
 <bean id="userService" class="yycg.base.service.impl.UserServiceImpl"/>-->
 <context:component-scan base-package="yycg.base.service"/>
+<bean id="dwrService" class="yycg.base.service.impl.DwrServiceImpl"/>
 </beans>

@@ -61,7 +61,7 @@ public class LoginInterceptor implements HandlerInterceptor{
 	}
 
 	//执行时机:action方法执行完成，已经 返回modelAndView，执行。
-		//使用场景：统一处理系统异常，在这里统一记录系统日志 ，监控action方法执行时间，在preHandle记录开始时间，在afterCompletion记录结束时间
+	//使用场景：统一处理系统异常，在这里统一记录系统日志 ，监控action方法执行时间，在preHandle记录开始时间，在afterCompletion记录结束时间
 	@Override
 	public void afterCompletion(HttpServletRequest request,
 			HttpServletResponse response, Object handler, Exception ex)

@@ -100,6 +100,15 @@ public interface UserService {
 	 * @throws Exception
 	 */
 	public void deleteUseryy(String id) throws Exception;
+	
+	
+	/**
+	 * 根据监督机构id获取信息
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	public Userjd getUserjdById(String id) throws Exception;
 
 	/**
 	 * 用户认证

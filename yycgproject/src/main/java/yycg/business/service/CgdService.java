@@ -112,5 +112,11 @@ public interface CgdService {
 	public int findYycgdReceivCount(String useryyid,
 			String year, YycgdQueryVo yycgdQueryVo)throws Exception;
 	
+	public List<YycgdmxCustom> findYycgdrkList(String useryyid,
+			String year, YycgdQueryVo yycgdQueryVo)throws Exception;
+	
+	public int findYycgdrkCount(String useryyid,
+			String year, YycgdQueryVo yycgdQueryVo)throws Exception;
+	
 	public void saveYycgdrk(String yycgdid,String ypxxid,YycgdrkCustom yycgdrkCustom)throws Exception;
 }

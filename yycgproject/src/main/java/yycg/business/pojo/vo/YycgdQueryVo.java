@@ -6,6 +6,9 @@ import yycg.base.pojo.po.Usergys;
 import yycg.base.pojo.po.Userjd;
 import yycg.base.pojo.po.Useryy;
 import yycg.base.pojo.vo.PageQuery;
+import yycg.base.pojo.vo.UseryyCustom;
+import yycg.business.pojo.po.Yythd;
+import yycg.business.pojo.po.Yythdmx;
 
 public class YycgdQueryVo {
 
@@ -40,6 +43,14 @@ public class YycgdQueryVo {
 	}
 	public void setYycgdCustoms(List<YycgdCustom> yycgdCustoms) {
 		this.yycgdCustoms = yycgdCustoms;
+	}
+	
+	private UseryyCustom useryyCustom;
+	public UseryyCustom getUseryyCustom() {
+		return useryyCustom;
+	}
+	public void setUseryyCustom(UseryyCustom useryyCustom) {
+		this.useryyCustom = useryyCustom;
 	}
 	private YycgdCustom yycgdCustom;
 	public YycgdCustom getYycgdCustom() {
@@ -99,5 +110,18 @@ public class YycgdQueryVo {
 		this.usergys = usergys;
 	}
 	
-	
+	private Yythd yythd;
+	public Yythd getYythd() {
+		return yythd;
+	}
+	public void setYythd(Yythd yythd) {
+		this.yythd = yythd;
+	}
+	private List<Yythdmx> yythdmxs;
+	public List<Yythdmx> getYythdmxs() {
+		return yythdmxs;
+	}
+	public void setYythdmxs(List<Yythdmx> yythdmxs) {
+		this.yythdmxs = yythdmxs;
+	}
 }

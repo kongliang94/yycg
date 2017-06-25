@@ -33,7 +33,7 @@ function yycgdsave_callback(data) {
 		//alert(data.resultInfo.sysdata.yycgdid);
 		var yycgdid=data.resultInfo.sysdata.yycgdid;
 		//alert(yycgdid);
-		window.location='${baseurl}cgd/editcgd.action?id='+yycgdid;
+		window.location='${baseurl}cgd/yycgdedit.action?id='+yycgdid;
 	}  
 	 
 }

@@ -17,10 +17,29 @@
 	<context:component-scan base-package="yycg.**.controller" />
 
     <!-- 处理器映射器和适配器，可以使用mvc注解驱动 -->
-    <mvc:annotation-driven/>
+    <!-- <mvc:annotation-driven/> -->
    
 
 
+	<!-- 注解驱动 -->
+	<mvc:annotation-driven conversion-service="conversionService">
+		<mvc:argument-resolvers>  
+	           <bean class="yycg.base.controller.converters.UserArgumentResolver"/>  
+	    </mvc:argument-resolvers>  
+		
+	</mvc:annotation-driven>
+
+<!-- 自定义注册属性编辑器 -->
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="yycg.base.controller.converters.StringTrimConverter" />
+				<bean class="yycg.base.controller.converters.DateConverter" />
+				<bean class="yycg.base.controller.converters.DatetimeConverter" />
+			</list>
+		</property>
+	</bean>
 	<!-- 视图解析器 -->
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -35,7 +54,7 @@
 		class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
 	</bean>
      
-	<!-- 统一异常处理类 -->
+	<!-- 统一异常处理类，需要在web.xml中将默认的异常处理器关闭 -->
 	<bean id="handlerExceptionResolver"
 		class="yycg.base.process.exception.ExceptionResolverCustom">
 		<!-- 注入一个json转换器 -->
@@ -58,7 +77,10 @@
 			<mvc:mapping path="/**" />
 			<bean class="yycg.base.filter.LoginInterceptor"></bean>
 		</mvc:interceptor>
-
+		 <mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="yycg.base.filter.PermissionInterceptor"></bean>
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 	

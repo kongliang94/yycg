@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="yycg.base.dao.mapper.SysuserMapperCustom">
-  
+<resultMap id="findMenuByroleidResultMap" type="yycg.base.pojo.vo.Menu">
+    <id column="menuid" property="menuid" />
+    <result column="menuname" property="menuname" />
+    <collection property="menus" ofType="yycg.base.pojo.vo.Menu">
+        <result column="menuid_two" property="menuid" />
+         <result column="menuname_two" property="menuname" />
+         <result column="url" property="url" />
+    </collection>
+</resultMap>
   <!-- sql片段 -->
 	<!-- 用户查询条件 通常情况，为了提高 sql片段可重用性，按单表创建sql片段 -->
 	<sql id="sysuser_where">
@@ -11,6 +19,42 @@
 			</if>
 		</if>
 	</sql>
+	<!-- 供货商查询条件 -->
+    <sql id="query_usergys_where">
+      <if test="usergys!=null">
+        <if test="usergys.id!=null and usergys.id!=''">
+           and usergys.id=#{usergys.id}
+        </if>
+        <if test="usergys.mc!=null and usergys.mc!=''">
+           and usergys.mc like '%${usergys.mc}%'
+        </if>
+      </if>
+    
+    </sql>
+    <!-- 医院查询条件 -->
+    <sql id="query_useryy_where">
+    	<if test="useryyCustom!=null">
+    	<!-- 所属管理地区，用于监督单位查询管辖医院 -->
+    		<if test="useryyCustom.gldq!=null and useryyCustom.gldq!=''">
+				and useryy.dq like '${useryyCustom.gldq}%'
+			</if>
+		</if>
+    
+        
+      <if test="useryy!=null">
+        <if test="useryy.mc!=null and useryy.mc!=''">
+           and useryy.mc like '%${useryy.mc}%'
+        </if>
+         <if test="useryy.id!=null and useryy.id!=''">
+           and useryy.id = #{useryy.id}
+        </if>
+        
+         <if test="useryy.dq!=null and useryy.dq!=''">
+           and useryy.id in (select id from useryy where dq like '${useryy.dq}%')
+        </if>
+      </if>
+    
+    </sql>
 	<sql id="query_sysuser_where">
 		<if test="sysuserCustom!=null">
 			<if test="sysuserCustom.userid!=null and sysuserCustom.userid!=''">
@@ -123,4 +167,47 @@
 	
 	</select>
 
+	<select id="findMenuByroleid" parameterType="java.lang.String"
+	resultMap="findMenuByroleidResultMap">
+		select m1.moduleid menuid,
+       m1.name     menuname,
+       m2.moduleid menuid_two,
+       m2.name     menuname_two,
+       m2.url
+  from bss_sys_module m1, bss_sys_module m2
+
+ where m2.parentid = m1.moduleid
+   and m1.parentid = '0'
+   and m2.parentid != '0'
+   
+   and m2.moduleid in(
+   
+   <!--角色范围内的菜单 -->
+   select bss_sys_rolemodule.moduleid from bss_sys_role,bss_sys_rolesys,bss_sys_rolenode,bss_sys_rolemodule,bss_sys_roleoperate
+   
+   where bss_sys_role.roleid=bss_sys_rolesys.roleid
+   and bss_sys_rolenode.rsid=bss_sys_rolesys.rsid
+   and bss_sys_rolemodule.rnid=bss_sys_rolenode.rnid
+   and bss_sys_roleoperate.rmid=bss_sys_rolemodule.rmid
+   and bss_sys_role.roleid=#{roleid} 
+   )
+  order by m1.showorder,m2.showorder
+	</select>
+	<!-- 根据角色Id获取操作权限 -->
+	<select id="findOperationByroleid" parameterType="string"
+	resultType="yycg.base.pojo.vo.Operation">
+		select o.operateid operationId
+,o.operatename operationName
+,o.method actionUrl
+    from bss_sys_operate o
+    where operateid in(
+
+select bss_sys_roleoperate.operateid from bss_sys_role,bss_sys_rolesys,bss_sys_rolenode,bss_sys_rolemodule,bss_sys_roleoperate
+   
+   where bss_sys_role.roleid=bss_sys_rolesys.roleid
+   and bss_sys_rolenode.rsid=bss_sys_rolesys.rsid
+   and bss_sys_rolemodule.rnid=bss_sys_rolenode.rnid
+   and bss_sys_roleoperate.rmid=bss_sys_rolemodule.rmid
+   and bss_sys_role.roleid=#{roleid})
+	</select>
 </mapper>

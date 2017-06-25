@@ -219,107 +219,107 @@ public class TjController {
 	}
 	
 	// 按区域统计
-		@RequestMapping("/groupbyarea")
-		public String groupbyarea(Model model,HttpSession session, ActiveUser activeUser, String year,// 查询年份
-				YycgdQueryVo yycgdQueryVo
+	@RequestMapping("/groupbyarea")
+	public String groupbyarea(Model model,HttpSession session, ActiveUser activeUser, String year,// 查询年份
+			YycgdQueryVo yycgdQueryVo
 
-		) throws Exception {
-			
-			//如果年份为空默认为当前年份
-			if(year == null){
-				year= MyUtil.get_YYYY(MyUtil.getDate());
-			}
-			
-			// 单位id
-			String sysid = activeUser.getSysid();
-			// 用户类型
-			String groupid = activeUser.getGroupid();
-			// 调用service查询数据
-			List<YycgdmxCustom> list = yybusinessService
-					.findYybusinessGroupbyAreaList(year, sysid, groupid,
-							yycgdQueryVo);
-			
-			//jfreechart定义
-			
-	    	DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-			// 第一个参数：统计数值，第二个参数：统计指标名称，第三个参数：统计分类
-			/*dataset.addValue(1310, "药品采购金额", "崔庙镇");
+			) throws Exception {
+
+		//如果年份为空默认为当前年份
+		if(year == null){
+			year= MyUtil.get_YYYY(MyUtil.getDate());
+		}
+
+		// 单位id
+		String sysid = activeUser.getSysid();
+		// 用户类型
+		String groupid = activeUser.getGroupid();
+		// 调用service查询数据
+		List<YycgdmxCustom> list = yybusinessService
+				.findYybusinessGroupbyAreaList(year, sysid, groupid,
+						yycgdQueryVo);
+
+		//jfreechart定义
+
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		// 第一个参数：统计数值，第二个参数：统计指标名称，第三个参数：统计分类
+		/*dataset.addValue(1310, "药品采购金额", "崔庙镇");
 			dataset.addValue(720.68, "药品采购金额", "汜水镇");
 			dataset.addValue(675.3, "药品采购金额", "高山镇");
 			dataset.addValue(560, "药品采购金额", "城关乡");
 			dataset.addValue(680.88, "药品采购金额", "刘河镇");
 			dataset.addValue(780, "药品采购金额", "环翠峪");*/
 
-			// 实际开发时，数据从数据库查询出来，
-			// 在for循环中向dataset中添加数据
-	    	for(YycgdmxCustom yycgdmxCustom:list){
-	    		dataset.addValue(yycgdmxCustom.getCgje(), "药品采购金额", yycgdmxCustom.getAreaname());
-	    	}
-
-			JFreeChart chart = ChartFactory.createBarChart3D("药品采购金额汇总",// 图形名称
-					"",// 分类名称，为横坐标名称
-					"采购金额(元)",// 值名称，为纵坐标名称
-					dataset,// 数据集合
-					PlotOrientation.VERTICAL,// 垂直显示
-					false,// 是否显示图例
-					false,// 是否使用工具提示
-					false);// 是否使用url
-
-			// 在柱上显示数值
-			CategoryPlot plot = chart.getCategoryPlot();
-
-			BarRenderer3D renderer = new BarRenderer3D();
-
-			// 设置柱的颜色
-			// renderer.setSeriesPaint(0, Color.decode("#ff0000"));
-
-			renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-			renderer.setBaseItemLabelsVisible(true);
-			// 默认的数字显示在柱子中，通过如下两句可调整数字的显示
-			// 注意：此句很关键，若无此句，数字的显示会被覆盖
-			renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(
-					ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_LEFT));
-			renderer.setItemLabelAnchorOffset(10D);
-			// 设置每个地区所包含的平行柱的之间距离
-			// renderer.setItemMargin(0.3);
-			plot.setRenderer(renderer);
-			// 设置字体
-			// 配置字体
-			Font xfont = new Font("宋体", Font.PLAIN, 12);// X轴
-			Font yfont = new Font("宋体", Font.PLAIN, 12);// Y轴
-			Font kfont = new Font("宋体", Font.PLAIN, 12);// 底部
-			Font titleFont = new Font("宋体", Font.BOLD, 25); // 图片标题
-			// 图形的绘制结构对象,对于饼图不适用
-
-			// 图片标题
-			chart.setTitle(new TextTitle(chart.getTitle().getText(), titleFont));
-
-			// 底部
-			LegendTitle legendTitle = chart.getLegend();
-			if (legendTitle != null) {
-				legendTitle.setItemFont(kfont);
-			}
-
-			// X 轴
-			CategoryAxis domainAxis = plot.getDomainAxis();
-			domainAxis.setLabelFont(xfont);// 轴标题
-			domainAxis.setTickLabelFont(xfont);// 轴数值
-			domainAxis.setTickLabelPaint(Color.BLUE); // 字体颜色
-			// domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
-
-			// Y 轴
-			ValueAxis rangeAxis = plot.getRangeAxis();
-			rangeAxis.setLabelFont(yfont);
-			rangeAxis.setLabelPaint(Color.BLUE); // 字体颜色
-			rangeAxis.setTickLabelFont(yfont);
-
-			// 将图形放在session，得到filename
-			String jfreechart_filename = ServletUtilities.saveChartAsPNG(chart,
-					900, 500, null, session);
-			
-			model.addAttribute("jfreechart_filename", jfreechart_filename);
-
-			return "/business/tj/groupbyarea";
+		// 实际开发时，数据从数据库查询出来，
+		// 在for循环中向dataset中添加数据
+		for(YycgdmxCustom yycgdmxCustom:list){
+			dataset.addValue(yycgdmxCustom.getCgje(), "药品采购金额", yycgdmxCustom.getAreaname());
 		}
+
+		JFreeChart chart = ChartFactory.createBarChart3D("药品采购金额汇总",// 图形名称
+				"",// 分类名称，为横坐标名称
+				"采购金额(元)",// 值名称，为纵坐标名称
+				dataset,// 数据集合
+				PlotOrientation.VERTICAL,// 垂直显示
+				false,// 是否显示图例
+				false,// 是否使用工具提示
+				false);// 是否使用url
+
+		// 在柱上显示数值
+		CategoryPlot plot = chart.getCategoryPlot();
+
+		BarRenderer3D renderer = new BarRenderer3D();
+
+		// 设置柱的颜色
+		// renderer.setSeriesPaint(0, Color.decode("#ff0000"));
+
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
+		// 默认的数字显示在柱子中，通过如下两句可调整数字的显示
+		// 注意：此句很关键，若无此句，数字的显示会被覆盖
+		renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(
+				ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_LEFT));
+		renderer.setItemLabelAnchorOffset(10D);
+		// 设置每个地区所包含的平行柱的之间距离
+		// renderer.setItemMargin(0.3);
+		plot.setRenderer(renderer);
+		// 设置字体
+		// 配置字体
+		Font xfont = new Font("宋体", Font.PLAIN, 12);// X轴
+		Font yfont = new Font("宋体", Font.PLAIN, 12);// Y轴
+		Font kfont = new Font("宋体", Font.PLAIN, 12);// 底部
+		Font titleFont = new Font("宋体", Font.BOLD, 25); // 图片标题
+		// 图形的绘制结构对象,对于饼图不适用
+
+		// 图片标题
+		chart.setTitle(new TextTitle(chart.getTitle().getText(), titleFont));
+
+		// 底部
+		LegendTitle legendTitle = chart.getLegend();
+		if (legendTitle != null) {
+			legendTitle.setItemFont(kfont);
+		}
+
+		// X 轴
+		CategoryAxis domainAxis = plot.getDomainAxis();
+		domainAxis.setLabelFont(xfont);// 轴标题
+		domainAxis.setTickLabelFont(xfont);// 轴数值
+		domainAxis.setTickLabelPaint(Color.BLUE); // 字体颜色
+		// domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+
+		// Y 轴
+		ValueAxis rangeAxis = plot.getRangeAxis();
+		rangeAxis.setLabelFont(yfont);
+		rangeAxis.setLabelPaint(Color.BLUE); // 字体颜色
+		rangeAxis.setTickLabelFont(yfont);
+
+		//将图形放在session，得到filename
+		String jfreechart_filename = ServletUtilities.saveChartAsPNG(chart,
+				900, 500, null, session);
+
+		model.addAttribute("jfreechart_filename", jfreechart_filename);
+
+		return "/business/tj/groupbyarea";
+	}
 
 }

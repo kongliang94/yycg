@@ -33,6 +33,14 @@
     </sql>
     <!-- 医院查询条件 -->
     <sql id="query_useryy_where">
+    	<if test="useryyCustom!=null">
+    	<!-- 所属管理地区，用于监督单位查询管辖医院 -->
+    		<if test="useryyCustom.gldq!=null and useryyCustom.gldq!=''">
+				and useryy.dq like '${useryyCustom.gldq}%'
+			</if>
+		</if>
+    
+        
       <if test="useryy!=null">
         <if test="useryy.mc!=null and useryy.mc!=''">
            and useryy.mc like '%${useryy.mc}%'
@@ -40,6 +48,7 @@
          <if test="useryy.id!=null and useryy.id!=''">
            and useryy.id = #{useryy.id}
         </if>
+        
          <if test="useryy.dq!=null and useryy.dq!=''">
            and useryy.id in (select id from useryy where dq like '${useryy.dq}%')
         </if>

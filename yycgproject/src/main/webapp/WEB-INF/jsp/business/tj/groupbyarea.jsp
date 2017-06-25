@@ -19,6 +19,12 @@ function businesslistquery(){
 	document.businesslistForm.submit();
 }
 
+$(function(){
+	//加载年
+	businessyearlist('year');
+	//加载采购状态
+	getDictinfoCodelist('011','yycgdmxCustom_cgzt');
+});
 </script>
 
 </HEAD>
@@ -28,10 +34,10 @@ function businesslistquery(){
 			<TABLE  class="table_search">
 				<TBODY>
 					<TR>
-						<TD class="left">年份(如2014)：</TD>
+						<TD class="left">年份(如2017)：</TD>
 						<td >
 						<select id="year" name="year"> 
-							<option value="2014">2014</option>
+							
 						</select>
 						</td>
 						<TD class="left">医院名称：</TD>
